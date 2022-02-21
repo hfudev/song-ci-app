@@ -71,6 +71,35 @@ class _HomePageState extends State<HomePage> {
     _refreshItems(); // Loading the diary when the app starts
   }
 
+  Card _toCard(SongCi _ci) {
+    final _title = _ci.title();
+    final _content = _ci.content;
+
+    final _isFavorite = _favorites.contains(_ci);
+
+    return Card(
+      child: ListTile(
+        title: Text(_title),
+        subtitle: Text(_content),
+        trailing: Icon(
+          _isFavorite ? Icons.favorite : Icons.favorite_border,
+          color: _isFavorite ? Colors.red : null,
+          semanticLabel:
+              _isFavorite ? 'Remove from favorites' : 'Add to favorites',
+        ),
+        onTap: () {
+          setState(() {
+            if (_isFavorite) {
+              _favorites.remove(_ci);
+            } else {
+              _favorites.add(_ci);
+            }
+          });
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -84,6 +113,12 @@ class _HomePageState extends State<HomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            onPressed: _pushSaved,
+            icon: const Icon(Icons.list),
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(
@@ -92,35 +127,23 @@ class _HomePageState extends State<HomePage> {
           : ListView.builder(
               itemCount: _items.length,
               itemBuilder: (context, index) {
-                final _item = _items[index];
-                final _title = _item.title();
-                final _content = _item.content;
-
-                final _isFavorite = _favorites.contains(_item);
-
-                return Card(
-                  child: ListTile(
-                    title: Text(_title),
-                    subtitle: Text(_content),
-                    trailing: Icon(
-                      _isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: _isFavorite ? Colors.red : null,
-                      semanticLabel: _isFavorite
-                          ? 'Remove from favorites'
-                          : 'Add to favorites',
-                    ),
-                    onTap: () {
-                      setState(() {
-                        if (_isFavorite) {
-                          _favorites.remove(_item);
-                        } else {
-                          _favorites.add(_item);
-                        }
-                      });
-                    },
-                  ),
-                );
+                return _toCard(_items[index]);
               }),
     );
+  }
+
+  void _pushSaved() {
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (context) {
+      final _items = _favorites.map((_item) {
+        return _toCard(_item);
+      });
+
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Favorites'),
+        ),
+        body: ListView(children: _items.toList()),
+      );
+    }));
   }
 }
