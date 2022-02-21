@@ -50,14 +50,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Map<String, dynamic>> _items = [];
-
+  List<SongCi> _items = [];
   bool _isLoading = true;
 
+  final _favorites = <SongCi>{};
+
   // This function is used to fetch all data from the database
-  void _refreshJournals() async {
+  void _refreshItems() async {
     final data = await DatabaseHelper.allItems();
-    final itemCount = data.length;
 
     setState(() {
       _items = data;
@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _refreshJournals(); // Loading the diary when the app starts
+    _refreshItems(); // Loading the diary when the app starts
   }
 
   @override
@@ -91,21 +91,36 @@ class _HomePageState extends State<HomePage> {
             )
           : ListView.builder(
               itemCount: _items.length,
-              itemBuilder: (context, index) => Card(
-                    child: ListTile(
-                      title: Text(_items[index]['rhythmic'] +
-                          ' ' +
-                          _items[index]['author']),
-                      subtitle: Text(_items[index]['content']),
-                      trailing: const SizedBox(
-                        width: 50,
-                        child: IconButton(
-                          icon: Icon(Icons.favorite),
-                          onPressed: null,
-                        ),
-                      ),
+              itemBuilder: (context, index) {
+                final _item = _items[index];
+                final _title = _item.title();
+                final _content = _item.content;
+
+                final _isFavorite = _favorites.contains(_item);
+
+                return Card(
+                  child: ListTile(
+                    title: Text(_title),
+                    subtitle: Text(_content),
+                    trailing: Icon(
+                      _isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: _isFavorite ? Colors.red : null,
+                      semanticLabel: _isFavorite
+                          ? 'Remove from favorites'
+                          : 'Add to favorites',
                     ),
-                  )),
+                    onTap: () {
+                      setState(() {
+                        if (_isFavorite) {
+                          _favorites.remove(_item);
+                        } else {
+                          _favorites.add(_item);
+                        }
+                      });
+                    },
+                  ),
+                );
+              }),
     );
   }
 }
