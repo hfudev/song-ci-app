@@ -12,3 +12,15 @@ A Song Ci app in flutter
 
 - [ ] github action to create release apk/exe/bin
 - [ ] add tests
+
+## License
+
+GPLv3
+
+## Fonts
+
+https://github.com/lxgw/LxgwWenKai-Lite
+
+## Song Ci Database
+
+https://github.com/chinese-poetry/chinese-poetry
