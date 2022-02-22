@@ -2,16 +2,24 @@
 
 A Song Ci app in flutter
 
-## Functionalities
+## TODOs
+
+### Functionalities
 
 - [ ] Homepage: Random one per day
 - [ ] Filter List: filter by different rhythmic, author
-- [ ] Favorite List: add favorite list, and persist in db
+- [x] Favorite List: add favorite list, and persist in db
+- [ ] Add db version. Write migration files while upgrading.
 
-## CI/CD
+### CI/CD
 
 - [ ] github action to create release apk/exe/bin
 - [ ] add tests
+
+## Current Bugs
+
+- [ ] can remove the favorite item inside the "favorites" view, but the view itself won't get
+  refreshed.
 
 ## License
 
