@@ -25,16 +25,18 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 
 class SongCi {
-  final int id;
-  final String rhythmic;
-  final String author;
-  final String content;
+  int id;
+  String rhythmic;
+  String author;
+  String content;
+  int isFavorite;
 
-  const SongCi({
+  SongCi({
     required this.id,
     required this.rhythmic,
     required this.author,
     required this.content,
+    required this.isFavorite,
   });
 
   Map<String, dynamic> toMap() {
@@ -43,7 +45,17 @@ class SongCi {
       'rhythmic': rhythmic,
       'author': author,
       'content': content,
+      'is_favorite': isFavorite,
     };
+  }
+
+  static SongCi fromMap(Map<String, dynamic> map) {
+    return SongCi(
+        id: map['id'],
+        rhythmic: map['rhythmic'],
+        author: map['author'],
+        content: map['content'],
+        isFavorite: map['is_favorite']);
   }
 
   String title() {
@@ -77,12 +89,29 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> maps = await db.query('ci', orderBy: 'id');
 
     return List.generate(maps.length, (index) {
-      return SongCi(
-        id: maps[index]['id'],
-        rhythmic: maps[index]['rhythmic'],
-        author: maps[index]['author'],
-        content: maps[index]['content'],
-      );
+      return SongCi.fromMap(maps[index]);
     });
+  }
+
+  static Future<List<SongCi>> favoriteItems() async {
+    final db = await DatabaseHelper.db();
+
+    final List<Map<String, dynamic>> maps =
+        await db.query('ci', where: 'is_favorite = 1', orderBy: 'id');
+
+    return List.generate(maps.length, (index) {
+      return SongCi.fromMap(maps[index]);
+    });
+  }
+
+  static Future<void> updateSongCi(SongCi ci) async {
+    final db = await DatabaseHelper.db();
+
+    await db.update(
+      'ci',
+      ci.toMap(),
+      where: 'id = ?',
+      whereArgs: [ci.id],
+    );
   }
 }

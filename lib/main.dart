@@ -70,16 +70,17 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<SongCi> _items = [];
+  List<SongCi> _favorites = [];
   bool _isLoading = true;
-
-  final _favorites = <SongCi>{};
 
   // This function is used to fetch all data from the database
   void _refreshItems() async {
     final data = await DatabaseHelper.allItems();
+    final favorites = await DatabaseHelper.favoriteItems();
 
     setState(() {
       _items = data;
+      _favorites = favorites;
       _isLoading = false;
     });
   }
@@ -93,8 +94,7 @@ class _HomePageState extends State<HomePage> {
   Card _toCard(SongCi _ci) {
     final _title = _ci.title();
     final _content = _ci.content;
-
-    final _isFavorite = _favorites.contains(_ci);
+    final _isFavorite = _ci.isFavorite == 1;
 
     return Card(
       child: ListTile(
@@ -110,9 +110,12 @@ class _HomePageState extends State<HomePage> {
           setState(() {
             if (_isFavorite) {
               _favorites.remove(_ci);
+              _ci.isFavorite = 0;
             } else {
               _favorites.add(_ci);
+              _ci.isFavorite = 1;
             }
+            DatabaseHelper.updateSongCi(_ci);
           });
         },
       ),
