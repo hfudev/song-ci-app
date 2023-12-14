@@ -59,7 +59,7 @@ class SongCi {
   }
 
   String title() {
-    return rhythmic + ' ' + author;
+    return '$rhythmic $author';
   }
 }
 

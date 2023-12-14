@@ -26,7 +26,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key, required this.title}) : super(key: key);
+  const HomePage({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -91,31 +91,31 @@ class _HomePageState extends State<HomePage> {
     _refreshItems(); // Loading the diary when the app starts
   }
 
-  Card _toCard(SongCi _ci) {
-    final _title = _ci.title();
-    final _content = _ci.content;
-    final _isFavorite = _ci.isFavorite == 1;
+  Card _toCard(SongCi ci) {
+    final title = ci.title();
+    final content = ci.content;
+    final isFavorite = ci.isFavorite == 1;
 
     return Card(
       child: ListTile(
-        title: Text(_title),
-        subtitle: Text(_content),
+        title: Text(title),
+        subtitle: Text(content),
         trailing: Icon(
-          _isFavorite ? Icons.favorite : Icons.favorite_border,
-          color: _isFavorite ? Colors.red : null,
+          isFavorite ? Icons.favorite : Icons.favorite_border,
+          color: isFavorite ? Colors.red : null,
           semanticLabel:
-              _isFavorite ? 'Remove from favorites' : 'Add to favorites',
+              isFavorite ? 'Remove from favorites' : 'Add to favorites',
         ),
         onTap: () {
           setState(() {
-            if (_isFavorite) {
-              _favorites.remove(_ci);
-              _ci.isFavorite = 0;
+            if (isFavorite) {
+              _favorites.remove(ci);
+              ci.isFavorite = 0;
             } else {
-              _favorites.add(_ci);
-              _ci.isFavorite = 1;
+              _favorites.add(ci);
+              ci.isFavorite = 1;
             }
-            DatabaseHelper.updateSongCi(_ci);
+            DatabaseHelper.updateSongCi(ci);
           });
         },
       ),
@@ -156,15 +156,15 @@ class _HomePageState extends State<HomePage> {
 
   void _pushSaved() {
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (context) {
-      final _items = _favorites.map((_item) {
-        return _toCard(_item);
+      final items = _favorites.map((item) {
+        return _toCard(item);
       });
 
       return Scaffold(
         appBar: AppBar(
           title: const Text('Favorites'),
         ),
-        body: ListView(children: _items.toList()),
+        body: ListView(children: items.toList()),
       );
     }));
   }
